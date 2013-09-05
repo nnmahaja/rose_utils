@@ -22,6 +22,12 @@ public:
 	return false;
     }
     
+    string fname = StringUtility::stripPathFromFileName(finfo->get_filenameString());
+    if (fname.compare("stl_bvector.h") == 0) {
+      return false;
+    }
+    
+    // this will eliminate functions from all headers
 //     SgSourceFile* sf = isSgSourceFile(getEnclosingFileNode(funcDecl));
 //     if(NULL == sf) {
 //       return false;
@@ -46,12 +52,19 @@ int main(int argc, char* argv[]) {
 //   cgb.buildCallGraph();
   SgIncidenceDirectedGraph* graph = cgb.getGraph();
   
+  set<string> files;
   set<SgGraphNode *> nodes = graph->computeNodeSet();
   for (set<SgGraphNode *>::iterator itr = nodes.begin(); itr != nodes.end(); itr++) {
     SgNode* n = (*itr)->get_SgNode();
-    cout << getVariantName(n->variantT()) << ", " << isSgFunctionDeclaration(n)->get_name().getString() << endl;
+//     cout << getVariantName(n->variantT()) << ", " << endl;
+//     cout << isSgFunctionDeclaration(n)->get_name().getString() << ", " << StringUtility::stripPathFromFileName(n->get_file_info()->get_filenameString()) << endl;
+    files.insert(StringUtility::stripPathFromFileName(n->get_file_info()->get_filenameString()));
   }
 
+  for (set<string>::iterator itr = files.begin(); itr != files.end(); itr++) {
+    cout << *itr << endl;
+  }
+  
   // This ROSE API method is not implemented and should not be used as the linker will complain
 //   GenerateDotGraph();
   
